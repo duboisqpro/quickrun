@@ -12,6 +12,8 @@ Quickrun lives in the macOS menu bar. Click the ⚡ icon to open a compact panel
 
 ## Menu bar panel
 
+![Menu bar panel](img/menubar.png)
+
 ### Opening the panel
 
 Click the `⚡` icon in the menu bar. The panel opens directly below and closes when you click outside it.
@@ -51,6 +53,8 @@ Click the `↗` button in the panel header to open the main Quickrun window.
 ---
 
 ## Main window
+
+![Main window — Actions tab](img/app.png)
 
 The main window has five tabs in the left sidebar.
 

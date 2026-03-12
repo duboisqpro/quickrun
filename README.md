@@ -6,6 +6,12 @@ A native macOS menu bar app to run and manage shell scripts in one click.
 ![Swift](https://img.shields.io/badge/Swift-5.9-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+<p align="center">
+  <img src="docs/img/menubar.png" width="260" alt="Menu bar panel" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="docs/img/app.png" width="520" alt="Main window — Actions tab" />
+</p>
+
 ## Features
 
 - **Menu bar access** — click the icon to open a compact panel with all your actions
