@@ -58,6 +58,9 @@ struct ActionsView: View {
 
     private var toolbar: some View {
         HStack {
+            Image(systemName: "bolt.fill")
+                .foregroundStyle(Color.accentColor)
+                .font(.title2)
             Text("Actions").font(.title2).bold()
             Spacer()
             Button { isCreating = true } label: {

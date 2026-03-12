@@ -33,7 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem.button else { return }
         button.image = NSImage(
-            systemSymbolName: "play.circle.fill",
+            systemSymbolName: "bolt.circle.fill",
             accessibilityDescription: "Quickrun"
         )
         button.action = #selector(togglePanel)

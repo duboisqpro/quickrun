@@ -38,7 +38,7 @@ struct PanelView: View {
 
     private var headerBar: some View {
         HStack {
-            Image(systemName: "play.circle.fill")
+            Image(systemName: "bolt.circle.fill")
                 .foregroundStyle(Color.accentColor)
             Text("Quickrun")
                 .font(.headline)

@@ -11,6 +11,9 @@ struct WorkspacesView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
+                Image(systemName: "folder.fill")
+                    .foregroundStyle(Color.accentColor)
+                    .font(.title2)
                 Text("Workspaces").font(.title2).bold()
                 Spacer()
                 Button { isAdding = true } label: {

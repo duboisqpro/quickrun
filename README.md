@@ -69,6 +69,11 @@ Quickrun/
 └── AppSettings.swift     # Theme enum and settings keys
 ```
 
+## Documentation
+
+- [Functional documentation](docs/functional.md) — how to use the app (panel, actions, workspaces, logs, settings)
+- [Technical documentation](docs/technical.md) — architecture, stores, process execution, UI patterns, pbxproj
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
