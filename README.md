@@ -1,10 +1,14 @@
-# Quickrun
+<p align="center">
+  <img src="docs/img/logo_title.png" width="320" alt="Quickrun" />
+</p>
 
-A native macOS menu bar app to run and manage shell scripts in one click.
+<p align="center">A native macOS menu bar app to run and manage shell scripts in one click.</p>
 
-![macOS](https://img.shields.io/badge/macOS-13%2B-blue)
-![Swift](https://img.shields.io/badge/Swift-5.9-orange)
-![License](https://img.shields.io/badge/license-MIT-green)
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-13%2B-blue" alt="macOS 13+" />
+  <img src="https://img.shields.io/badge/Swift-5.9-orange" alt="Swift 5.9" />
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license" />
+</p>
 
 <p align="center">
   <img src="docs/img/menubar.png" width="260" alt="Menu bar panel" />
@@ -16,8 +20,9 @@ A native macOS menu bar app to run and manage shell scripts in one click.
 
 - **Menu bar access** — click the icon to open a compact panel with all your actions
 - **Action tiles** — run or stop any script in one click, with live status color feedback
-- **Workspaces** — group actions by project and filter them instantly
-- **Shell support** — bash or zsh, with optional profile loading (`~/.bash_profile`, `~/.bashrc`)
+- **Workspaces** — group actions by project, filter them instantly, navigate from workspace tiles directly to filtered actions
+- **Drag-and-drop ordering** — reorder both workspaces and actions by dragging tiles
+- **Shell support** — bash or zsh, with optional profile loading (`~/.bash_profile`, `~/.bashrc`) — enabled by default
 - **Advanced scripts** — multiline commands, custom working directory, environment variables, timeout
 - **Run history & logs** — view output logs per run, with live scrolling
 - **Trash** — deleted actions go to the trash and can be restored
@@ -28,7 +33,7 @@ A native macOS menu bar app to run and manage shell scripts in one click.
 ## Requirements
 
 - macOS 13 Ventura or later
-- Xcode 15+
+- Xcode 15+ (build only)
 
 ## Getting started
 
@@ -39,6 +44,14 @@ open Quickrun.xcodeproj
 ```
 
 Build and run with `⌘R`. The app is **not sandboxed** so it can execute arbitrary shell scripts with your user privileges.
+
+## Building a DMG
+
+```bash
+./build.sh
+```
+
+Produces `Quickrun.dmg` at the project root with a drag-to-`/Applications` installer layout.
 
 ## Configuration
 
@@ -66,7 +79,7 @@ Quickrun/
 ├── MainWindowView.swift  # Root navigation (sidebar + tabs)
 ├── PanelView.swift       # Menu bar popover panel
 ├── ActionsView.swift     # Actions tab (tile grid)
-├── WorkspacesView.swift  # Workspaces tab
+├── WorkspacesView.swift  # Workspaces tab (tile grid)
 ├── TrashView.swift       # Trash tab
 ├── RunsView.swift        # Runs & Logs tab
 ├── LogsView.swift        # Log viewer
@@ -78,7 +91,7 @@ Quickrun/
 ## Documentation
 
 - [Functional documentation](docs/functional.md) — how to use the app (panel, actions, workspaces, logs, settings)
-- [Technical documentation](docs/technical.md) — architecture, stores, process execution, UI patterns, pbxproj
+- [Technical documentation](docs/technical.md) — architecture, stores, process execution, drag-and-drop, UI patterns, pbxproj
 
 ## License
 

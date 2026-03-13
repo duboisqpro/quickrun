@@ -32,3 +32,19 @@ enum SettingsKey {
     static let theme          = "theme"
     static let launchAtLogin  = "launchAtLogin"
 }
+
+// MARK: - Date formatting
+
+extension Date {
+    /// Static label that never triggers a SwiftUI timer:
+    /// "2:30 PM" if today, "Dec 15 at 2:30 PM" otherwise.
+    var shortLabel: String {
+        if Calendar.current.isDateInToday(self) {
+            return formatted(.dateTime.hour().minute())
+        }
+        if Calendar.current.isDateInYesterday(self) {
+            return "Yesterday at \(formatted(.dateTime.hour().minute()))"
+        }
+        return formatted(.dateTime.month(.abbreviated).day().hour().minute())
+    }
+}

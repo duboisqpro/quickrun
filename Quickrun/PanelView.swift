@@ -16,7 +16,7 @@ struct PanelView: View {
 
     private var filteredActions: [Action] {
         guard filterRaw != "all", let id = UUID(uuidString: filterRaw) else {
-            return actionStore.actions
+            return actionStore.actions.filter { $0.workspaceId == nil }
         }
         return actionStore.actions.filter { $0.workspaceId == id }
     }
@@ -38,16 +38,16 @@ struct PanelView: View {
 
     private var headerBar: some View {
         HStack {
-            Image(systemName: "bolt.circle.fill")
-                .foregroundStyle(Color.accentColor)
+            Image("QuickrunLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 29, height: 22)
             Text("Quickrun")
                 .font(.headline)
             Spacer()
-            Button { openMainWindow() } label: {
-                Image(systemName: "arrow.up.right.square")
-            }
-            .buttonStyle(.plain)
-            .help("Open Quickrun window")
+            Button("Open App") { openMainWindow() }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
         }
         .padding(.horizontal, 16)
         .padding(.top, 14)
@@ -95,11 +95,7 @@ struct PanelView: View {
                     spacing: 8
                 ) {
                     ForEach(filteredActions) { action in
-                        ActionTile(
-                            action: action,
-                            workspaceStore: workspaceStore,
-                            showWorkspaceBadge: filterRaw == "all"
-                        )
+                        ActionTile(action: action)
                     }
                 }
                 .padding(12)
@@ -207,14 +203,11 @@ private struct WorkspacePill: View {
 // MARK: - Action tile
 
 private struct ActionTile: View {
-    let action:             Action
-    let workspaceStore:     WorkspaceStore
-    let showWorkspaceBadge: Bool
+    let action: Action
 
     @EnvironmentObject var runStore: RunStore
 
     private var isRunning: Bool { runStore.isRunning(actionId: action.id) }
-    private var workspace: Workspace? { workspaceStore.workspace(for: action.workspaceId) }
     private var lastRun: Run? { runStore.runs.first { $0.actionId == action.id } }
 
     private var tileBackground: Color {
@@ -245,20 +238,7 @@ private struct ActionTile: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
 
-                // Workspace badge — pill avec nom en mode "all"
-                if let ws = workspace, showWorkspaceBadge {
-                    HStack(spacing: 3) {
-                        Circle().fill(ws.color.color).frame(width: 5, height: 5)
-                        Text(ws.name)
-                            .font(.system(size: 9))
-                            .lineLimit(1)
-                    }
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(Capsule().fill(ws.color.color.opacity(0.12)))
-                    .overlay(Capsule().strokeBorder(ws.color.color.opacity(0.3), lineWidth: 0.5))
-                    .foregroundStyle(ws.color.color)
-                }
+
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 6)
@@ -297,7 +277,7 @@ private struct RunLogRow: View {
                         .font(.caption)
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(run.startedAt, style: .relative)
+                    Text(run.startedAt.shortLabel)
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")

@@ -26,7 +26,8 @@ struct MainWindowView: View {
         }
     }
 
-    @State private var selectedTab: Tab = .workspaces
+    @State private var selectedTab:     Tab  = .workspaces
+    @State private var showQuitConfirm: Bool = false
 
     var body: some View {
         NavigationSplitView {
@@ -35,6 +36,33 @@ struct MainWindowView: View {
                     .tag(tab)
             }
             .navigationSplitViewColumnWidth(min: 155, ideal: 175)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                Button(role: .destructive) {
+                    showQuitConfirm = true
+                } label: {
+                    Label("Quit Quickrun", systemImage: "power")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundStyle(.red)
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+            }
+            .confirmationDialog(
+                "Quit Quickrun?",
+                isPresented: $showQuitConfirm,
+                titleVisibility: .visible
+            ) {
+                Button("Quit", role: .destructive) {
+                    runStore.stopAll()
+                    NSApp.terminate(nil)
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text(runStore.runs.filter { $0.status == .running }.isEmpty
+                     ? "The app will close."
+                     : "All running scripts will be stopped before closing.")
+            }
         } detail: {
             Group {
                 switch selectedTab {
@@ -60,6 +88,9 @@ struct MainWindowView: View {
         .navigationTitle("Quickrun")
         .onReceive(NotificationCenter.default.publisher(for: .quickrunNavigateToRuns)) { _ in
             selectedTab = .runs
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .quickrunNavigateToActions)) { _ in
+            selectedTab = .actions
         }
     }
 }

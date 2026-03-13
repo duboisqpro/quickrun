@@ -8,8 +8,9 @@ struct ActionFormView: View {
         case edit(Action)
     }
 
-    let mode:   Mode
-    let onSave: (Action) -> Void
+    let mode:               Mode
+    var defaultWorkspaceId: UUID? = nil
+    let onSave:             (Action) -> Void
 
     @EnvironmentObject var workspaceStore: WorkspaceStore
     @Environment(\.dismiss) private var dismiss
@@ -18,7 +19,7 @@ struct ActionFormView: View {
     @State private var command:           String  = ""
     @State private var shell:             Shell   = .bash
     @State private var workspaceId:       UUID?   = nil
-    @State private var usesShellProfile:  Bool    = false
+    @State private var usesShellProfile:  Bool    = true
     @State private var workingDirectory:  String  = ""
     @State private var envText:           String  = ""   // "KEY=VALUE" per line
     @State private var timeoutText:       String  = ""   // seconds, empty = none
@@ -237,6 +238,10 @@ struct ActionFormView: View {
     }
 
     private func populate() {
+        if case .create = mode {
+            workspaceId = defaultWorkspaceId
+            return
+        }
         guard case .edit(let action) = mode else { return }
         name              = action.name
         command           = action.command

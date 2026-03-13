@@ -12,9 +12,12 @@ struct ActionsView: View {
     @State private var actionToTrash:    Action?  = nil
     @State private var logAction:        Action?  = nil
     @State private var showTrashAlert             = false
+    @State private var dropTargetId:     UUID?    = nil
 
     private var filteredActions: [Action] {
-        guard let id = filterWorkspaceId else { return actionStore.actions }
+        guard let id = filterWorkspaceId else {
+            return actionStore.actions.filter { $0.workspaceId == nil }
+        }
         return actionStore.actions.filter { $0.workspaceId == id }
     }
 
@@ -27,7 +30,7 @@ struct ActionsView: View {
             content
         }
         .sheet(isPresented: $isCreating) {
-            ActionFormView(mode: .create) { actionStore.add($0) }
+            ActionFormView(mode: .create, defaultWorkspaceId: filterWorkspaceId, onSave: { actionStore.add($0) })
                 .environmentObject(workspaceStore)
         }
         .sheet(item: $editingAction) { action in
@@ -37,6 +40,11 @@ struct ActionsView: View {
         .sheet(item: $logAction) { action in
             ActionLogSheet(action: action)
                 .environmentObject(runStore)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .quickrunNavigateToActions)) { notification in
+            if let id = notification.userInfo?["workspaceId"] as? UUID {
+                filterWorkspaceId = id
+            }
         }
         .confirmationDialog(
             "Delete \"\(actionToTrash?.name ?? "")\"?",
@@ -132,12 +140,22 @@ struct ActionsView: View {
                 ) {
                     ForEach(filteredActions) { action in
                         ActionTile(
-                            action:    action,
-                            workspace: workspaceStore.workspace(for: action.workspaceId),
-                            onEdit:    { editingAction = action },
-                            onDelete:  { actionToTrash = action; showTrashAlert = true },
-                            onLogs:    { logAction = action }
+                            action:       action,
+                            isDropTarget: dropTargetId == action.id,
+                            onEdit:       { editingAction = action },
+                            onDelete:     { actionToTrash = action; showTrashAlert = true },
+                            onLogs:       { logAction = action }
                         )
+                        .draggable(action.id.uuidString)
+                        .dropDestination(for: String.self) { items, _ in
+                            guard let srcId = items.first.flatMap(UUID.init),
+                                  srcId != action.id
+                            else { return false }
+                            withAnimation { actionStore.move(from: srcId, to: action.id) }
+                            return true
+                        } isTargeted: { targeted in
+                            dropTargetId = targeted ? action.id : nil
+                        }
                     }
                 }
                 .padding(20)
@@ -149,11 +167,11 @@ struct ActionsView: View {
 // MARK: - Action Tile
 
 private struct ActionTile: View {
-    let action:    Action
-    let workspace: Workspace?
-    let onEdit:    () -> Void
-    let onDelete:  () -> Void
-    let onLogs:    () -> Void
+    let action:       Action
+    var isDropTarget: Bool = false
+    let onEdit:       () -> Void
+    let onDelete:     () -> Void
+    let onLogs:       () -> Void
 
     @EnvironmentObject var runStore: RunStore
 
@@ -196,9 +214,14 @@ private struct ActionTile: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(tileBorderColor, lineWidth: tileBorderWidth)
+                .strokeBorder(
+                    isDropTarget ? Color.accentColor : tileBorderColor,
+                    lineWidth: isDropTarget ? 2 : tileBorderWidth
+                )
         )
         .shadow(color: .black.opacity(0.04), radius: 3, y: 1)
+        .scaleEffect(isDropTarget ? 1.02 : 1.0)
+        .animation(.easeInOut(duration: 0.15), value: isDropTarget)
     }
 
     // Status bar + badges
@@ -220,16 +243,6 @@ private struct ActionTile: View {
                 .padding(.horizontal, 5).padding(.vertical, 2)
                 .background(Capsule().fill(Color(NSColor.quaternaryLabelColor)))
                 .foregroundStyle(.secondary)
-
-            // Workspace badge
-            if let ws = workspace {
-                HStack(spacing: 3) {
-                    Circle().fill(ws.color.color).frame(width: 6, height: 6)
-                    Text(ws.name).font(.caption2).foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 5).padding(.vertical, 2)
-                .background(Capsule().fill(ws.color.color.opacity(0.1)))
-            }
 
             // Delete button
             Button(action: onDelete) {
@@ -256,18 +269,19 @@ private struct ActionTile: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
 
-            if let cwd = action.workingDirectory, !cwd.isEmpty {
-                Label(cwd, systemImage: "folder")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .lineLimit(1)
-            }
+            Label(
+                action.workingDirectory.flatMap { $0.isEmpty ? nil : $0 } ?? " ",
+                systemImage: "folder"
+            )
+            .font(.caption2)
+            .foregroundStyle(.tertiary)
+            .lineLimit(1)
 
             // Last run status
             HStack(spacing: 4) {
                 if let run = lastRun {
                     Circle().fill(run.status.color).frame(width: 5, height: 5)
-                    Text("Last run \(run.startedAt, style: .relative) ago — \(run.status.label)")
+                    Text("Last run \(run.startedAt.shortLabel) — \(run.status.label)")
                 } else {
                     Circle().fill(Color.secondary.opacity(0.4)).frame(width: 5, height: 5)
                     Text("Never run")

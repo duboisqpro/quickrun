@@ -32,6 +32,11 @@ final class WorkspaceStore: ObservableObject {
         save()
     }
 
+    func move(from source: IndexSet, to destination: Int) {
+        workspaces.move(fromOffsets: source, toOffset: destination)
+        save()
+    }
+
     func workspace(for id: UUID?) -> Workspace? {
         guard let id else { return nil }
         return workspaces.first { $0.id == id }

@@ -22,7 +22,7 @@ Click the `⚡` icon in the menu bar. The panel opens directly below and closes 
 
 A horizontal row of pills lets you filter which actions are shown:
 
-- **All** — shows every action regardless of workspace.
+- **All** — shows only actions that are not assigned to any workspace.
 - **Workspace pill** — shows only actions belonging to that workspace.
 
 Your filter selection is remembered between sessions.
@@ -39,8 +39,6 @@ The tile's background color reflects the last known state:
 | Blue tint | Last run finished successfully |
 | Orange tint | Last run ended with an error |
 | Neutral | Killed by user, or never run |
-
-When the "All" filter is active, a workspace badge (color dot + name) appears at the bottom of each tile.
 
 ### Logs section
 
@@ -60,22 +58,35 @@ The main window has five tabs in the left sidebar.
 
 ### Workspaces tab
 
-Create logical groups to organise your actions.
+Workspaces are displayed as a tile grid. Each tile shows the workspace name, color, and the number of actions it contains.
 
-- **New Workspace** — choose a name and a color.
-- **Edit** — click the pencil icon on a row.
-- **Delete** — swipe to delete or use the edit mode.
+**Actions on each tile:**
+- **Click the body (action count area)** — navigates to the Actions tab pre-filtered on that workspace.
+- **Pencil button (Modifier)** — opens the edit form to rename or recolor.
+- **× button** — deletes the workspace with a confirmation dialog.
+
+**Confirmation on delete:**
+- If the workspace has no actions: simple confirmation.
+- If it has actions: warning that they will become unassigned (not deleted).
+
+**Reordering workspaces** — drag and drop tiles to change their order. The order is persisted.
 
 Workspaces are purely organisational — deleting a workspace does not delete its actions (they become unassigned).
 
 ### Actions tab
 
-Your full action library displayed as an advanced tile grid.
+Your full action library displayed as a tile grid.
+
+**Workspace filter bar** — a row of pills at the top filters the visible actions:
+- **All** — actions not assigned to any workspace.
+- **Workspace pill** — actions belonging to that workspace.
+
+Clicking a workspace pill from the Workspaces tab navigates here with the filter pre-applied.
 
 **Each tile shows:**
-- Status indicator (running / idle) + shell badge + workspace badge
+- Status indicator (running / idle) + shell badge
 - Action name and first line of command
-- Working directory (if set)
+- Working directory (always shown — empty if not configured)
 - Last run status and time (or "Never run")
 
 **Footer buttons:**
@@ -83,18 +94,20 @@ Your full action library displayed as an advanced tile grid.
 - **Edit** — open the edit form.
 - **Logs** — open a log sheet filtered to this action's runs.
 
+**Reordering actions** — drag and drop tiles to change their order within the current filter. The order is persisted globally.
+
 **Creating an action** — click **New Action** and fill in:
 
 | Field | Description |
 |-------|-------------|
 | Name | Display label shown on the tile |
+| Workspace | Pre-filled with the active workspace filter (if any) |
 | Command | Shell script content — multiline supported |
 | Shell | `bash` or `zsh` |
-| Load shell profile | Sources `~/.bash_profile` / `~/.bashrc` before running |
+| Load shell profile | Sources `~/.bash_profile` / `~/.bashrc` before running — **enabled by default** |
 | Working directory | Folder picker; leave empty to inherit the app's cwd |
 | Environment variables | Key=value pairs injected at runtime |
 | Timeout | Auto-kill after N seconds; leave empty for no limit |
-| Workspace | Assign to a workspace for filtering |
 
 **Deleting an action** — click the `×` button on the tile. A confirmation dialog appears; the action moves to the **Trash** (not permanently deleted).
 
@@ -152,7 +165,8 @@ You can edit these files manually while the app is not running. Use **Settings �
 
 ## Tips
 
-- **Aliases and shell functions**: enable "Load shell profile" on the action to make your aliases and functions available.
+- **Aliases and shell functions**: enable "Load shell profile" on the action to make your aliases and functions available (enabled by default on new actions).
 - **Long-running processes**: Quickrun keeps the process alive even if you close the main window. The menu bar icon is always there to stop it.
 - **Multiple projects**: use workspaces to group actions by project and switch context instantly with the filter pills.
+- **Workspace navigation**: clicking the body of a workspace tile instantly navigates to its actions — no need to switch tabs manually.
 - **Export before changes**: use Export before bulk-editing or resetting, so you can restore your configuration if needed.

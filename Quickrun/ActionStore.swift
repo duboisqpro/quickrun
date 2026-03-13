@@ -32,6 +32,15 @@ final class ActionStore: ObservableObject {
         saveActions()
     }
 
+    func move(from srcId: UUID, to dstId: UUID) {
+        guard let srcIdx = actions.firstIndex(where: { $0.id == srcId }),
+              let dstIdx = actions.firstIndex(where: { $0.id == dstId })
+        else { return }
+        actions.move(fromOffsets: IndexSet(integer: srcIdx),
+                     toOffset: dstIdx > srcIdx ? dstIdx + 1 : dstIdx)
+        saveActions()
+    }
+
     /// Moves an action to the trash instead of deleting it permanently.
     func trash(_ action: Action) {
         actions.removeAll { $0.id == action.id }

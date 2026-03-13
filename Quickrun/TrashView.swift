@@ -41,7 +41,7 @@ struct TrashView: View {
                                     .font(.system(.caption, design: .monospaced))
                                     .foregroundStyle(.secondary)
                                     .lineLimit(1)
-                                Text("Deleted \(trashed.trashedAt, style: .relative) ago")
+                                Text("Deleted \(trashed.trashedAt.shortLabel)")
                                     .font(.caption2).foregroundStyle(.tertiary)
                             }
                             Spacer()

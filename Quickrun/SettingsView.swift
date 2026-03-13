@@ -75,18 +75,37 @@ struct SettingsView: View {
                 }
 
                 Section("About") {
-                    LabeledContent("Version") {
-                        Text(
-                            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-                            ?? "1.0"
-                        )
-                        .foregroundStyle(.secondary)
-                    }
-                    LabeledContent("Note") {
-                        Text("Scripts run with your user privileges. Quickrun is not sandboxed.")
+                    VStack(spacing: 16) {
+                        Image("QuickrunTitle")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 48)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
+                            .background(Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                        HStack(spacing: 24) {
+                            Label(
+                                Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0",
+                                systemImage: "tag"
+                            )
                             .foregroundStyle(.secondary)
+                            .font(.subheadline)
+
+                            Link(destination: URL(string: "https://github.com/duboisqpro/quickrun")!) {
+                                Label("GitHub", systemImage: "arrow.up.right.square")
+                                    .font(.subheadline)
+                            }
+                        }
+
+                        Text("Scripts run with your user privileges. Quickrun is not sandboxed.")
                             .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
                 }
             }
             .formStyle(.grouped)
